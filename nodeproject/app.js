@@ -7,6 +7,14 @@ var app = express(); // Creation of Instance to Express
 // This following command sets a port for Express to listen on
 var port = process.env.PORT;
 
+// Definition of a static directory(s)
+// Will look for the requested resource first in this directory and if not found
+// use other request handlers
+app.use(express.static('public'));
+app.use(express.static('src/views'));
+app.use(express.static('bower_components'));
+
+
 // Get request handler
 // Any request that comes in express will be looking at the request
 // to see what type it is. If it is a Get request then we grab that with the
