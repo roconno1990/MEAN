@@ -8,6 +8,9 @@ var app = express(); // Creation of Instance to Express
 //
 var port = process.env.PORT;
 
+// Definition of an Event Router
+var eventRouter = require('./src/routes/eventRoutes');
+
 // Definition of a static directory(s)
 // Will look for the requested resource first in this directory and if not found
 // use other request handlers
@@ -20,6 +23,8 @@ app.set('views', './src/views'); // Will be used by EJS to find the views
 // EJS is a templeting engine, this defines it as our view engine
 //
 app.set('view engine', 'ejs');
+
+app.use('/Events', eventRouter); // For Events events use eventRouter
 
 // Get request handler
 // Any request that comes in express will be looking at the request
@@ -35,7 +40,12 @@ app.get('/', function(req, res){
     //
     res.render('index', { 
         list: ['First val', '2nd val', '3rd val'],
-        nav: ['Services', 'Portfolio', 'About', 'Team', 'Contact', 'NewThing']
+        nav: [{ Link: 'Services', Text: 'Services' }, 
+              { Link: 'Portfolio', Text: 'Portfolio' },
+              { Link: 'About', Text: 'About' },
+              { Link: 'Team', Text: 'Team' },
+              { Link: 'Contact', Text: 'Contact' },
+              { Link: 'Events', Text: 'Events' }]
     });
 });
 
