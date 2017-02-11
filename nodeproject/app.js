@@ -13,8 +13,13 @@ var port = process.env.PORT;
 // use other request handlers
 //
 app.use(express.static('public'));
-app.use(express.static('src/views'));
 app.use(express.static('bower_components'));
+
+app.set('views', './src/views'); // Will be used by EJS to find the views
+
+// EJS is a templeting engine, this defines it as our view engine
+//
+app.set('view engine', 'ejs');
 
 // Get request handler
 // Any request that comes in express will be looking at the request
@@ -24,7 +29,14 @@ app.use(express.static('bower_components'));
 // '/' is the home route (https://nodejs-0-to-webapp-roconno1990.c9users.io)
 //
 app.get('/', function(req, res){
-    res.send('Hello World!');
+    //res.send('Hello World!');
+
+    // Passing variables into our index file
+    //
+    res.render('index', { 
+        list: ['First val', '2nd val', '3rd val'],
+        nav: ['Services', 'Portfolio', 'About', 'Team', 'Contact', 'NewThing']
+    });
 });
 
 // Adding /routing to the "clean" URL will bring up this page

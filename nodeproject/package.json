@@ -6,6 +6,7 @@
   "author": "Mostafa Eweda <mo.eweda@gmail.com>",
   "dependencies": {
     "async": "~0.2.8",
+    "ejs": "^2.5.5",
     "express": "^4.13.3",
     "socket.io": "~0.9.14"
   },
