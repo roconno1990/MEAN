@@ -14,7 +14,9 @@
   },
   "devDependencies": {
     "gulp": "^3.9.1",
+    "gulp-inject": "^4.2.0",
     "gulp-jshint": "^2.0.4",
+    "gulp-nodemon": "^2.2.1",
     "jshint": "^2.9.4",
     "wiredep": "^4.0.0"
   },

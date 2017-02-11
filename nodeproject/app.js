@@ -16,7 +16,6 @@ app.use(express.static('public'));
 app.use(express.static('src/views'));
 app.use(express.static('bower_components'));
 
-
 // Get request handler
 // Any request that comes in express will be looking at the request
 // to see what type it is. If it is a Get request then we grab that with the
