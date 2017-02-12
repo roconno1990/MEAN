@@ -10,6 +10,8 @@ var port = process.env.PORT;
 
 // Definition of an Event Router
 var eventRouter = require('./src/routes/eventRoutes');
+// Definition of a db Router
+var dbRouter = require('./src/routes/dbRoutes');
 
 // Definition of a static directory(s)
 // Will look for the requested resource first in this directory and if not found
@@ -25,6 +27,7 @@ app.set('views', './src/views'); // Will be used by EJS to find the views
 app.set('view engine', 'ejs');
 
 app.use('/Events', eventRouter); // For Events events use eventRouter
+app.use('/Db', dbRouter); // For Db events use dbRouter
 
 // Get request handler
 // Any request that comes in express will be looking at the request
