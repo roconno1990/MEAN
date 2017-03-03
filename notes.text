@@ -1,0 +1,137 @@
+https://mongo-db-web-project-roconno1990.c9users.io/
+
+MongoDb is a NoSQL database, which is made up of documents.
+
+This command is used to start the mongodb database:
+mongod --bind_ip=$IP --nojournal
+
+This command is used to import existing array data defined in a json file into our database:
+- It creates eventApp if it doesn't exist, then drops the data from data_test.json into
+  the event collection (in a relational sense this is a table)
+mongoimport --db eventApp --collection event --drop --jsonArray --file data_test.json
+
+Open the mongo shell:
+mongo
+
+Note: the mongo shell can understand mongo commands and/or javascript
+Example:
+var eventCount = function(){ var count = db.events.count(); var countRecord = {_id: Date(), eventCount: count}; db.eventCount.save(countRecord); print("Events Collection record count: " + countRecord.eventCount); }
+-Then to run this function we do:
+eventCount();
+
+Use help command in shell to see things you can use.
+
+To clear screen in mongo shell:
+cls
+
+Example of what an embedded entity looks like:
+- The embedded part is location
+{ "_id" : ObjectId("58a1152f31a1cd101178695d"), "name" : "Event 1", "description" : "The first event", "date" : "2016.01.01", "time" : "1:00 PM", "duration" : "1 Hour",
+"location" : { "streetAddr" : "101 Main St.", "city" : "Los Angeles", "state" : "CA", "zip" : "87885", "lon" : 0, "lat" : 0 }, "capacity" : 100 }
+
+Getting data from an embedded entity example:
+- You use dot notation to do this
+db.events.find( { 'location.streetAddr':'303 Main St.' } )
+
+Sorting by a specific field:
+Descending:
+db.events.find().sort({'capacity':-1})
+
+Ascending:
+db.events.find().sort({'capacity':1})
+
+Retreiving data from the collection by greater than or less than:
+db.users.find({ 'userType' : {$gt:1} })  // greater than
+db.users.find({ 'userType' : {$gte:1} }) // greater than or equal to
+db.users.find({ 'userType' : {$lt:2} }) // less than
+db.users.find({ 'userType' : {$lte:2} }) // less than or equal to
+db.users.find({ 'userType' : {$eq:2} }) // equal to
+db.users.find({ 'userType' : {$gt:1, $lt: 3} }) // get range
+db.users.find({ 'userType' : {$in: [1, 2]} }) // This gives an array of things to look for matching
+
+The following will create a new collection and will save our new document inside of it:
+db.goof.save({_id:1, foo:5})
+
+With the save command mongo lets to create two documents with the same ID, like so:
+> db.goof.save({_id:1, name:'aaa'})
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+> db.goof.save({_id:1, name:'bbb'})
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+Then when you do a find on the collection you only get:
+> db.goof.find()
+{ "_id" : 1, "name" : "bbb" } // so it will overwrite to be the latest one
+
+To avoid the above we should use the command insert():
+db.spoof.insert({_id:1, name:'abc'})
+WriteResult({ "nInserted" : 1 })   // This is also creating the spoof collection since it didn't exist before
+
+Now see when we try to insert something into this collection with the same id:
+> db.spoof.insert({_id:1, name:'bbc'})
+WriteResult({
+        "nInserted" : 0,
+        "writeError" : {
+                "code" : 11000,
+                "errmsg" : "insertDocument :: caused by :: 11000 E11000 duplicate key error index: test.spoof.$_id_  dup key: { : 1.0 }"
+        }
+})
+It doesn't let us!
+
+We can define a new user in the mongo shell via javascript then save it to our collection like so:
+> var usr = { userType:2, firstName:'George', lastName:'WhoCares', email:'wgaf@gmail.com', password:'password', socialMedia:'Facebook' }
+> db.users.save(usr)
+WriteResult({ "nInserted" : 1 })
+
+You can also update an existing document like so:
+> db.nsrt.update({_id:1}, {foo:2})  // The _id value locates the document and thn it is updated with the new value
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+> db.nsrt.find()
+{ "_id" : 1, "foo" : 2 }
+
+We can also update a document to have a new field like so:
+> db.nsrt.update({_id:1}, {$set:{boo:'aaa'}})
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+> db.nsrt.find()
+{ "_id" : 1, "foo" : 2, "boo" : "aaa" }
+
+You can also unset a field like so:
+> db.nsrt.update({_id:1}, {$unset:{boo:0}})
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+> db.nsrt.find()
+{ "_id" : 1, "foo" : 2 }
+
+You can also rename a field like so:
+> db.nsrt.update({_id:1}, {$rename:{'foo':'bar'}})
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+> db.nsrt.find()
+{ "_id" : 1, "bar" : 2 }
+
+We can do something a little more complex by adding a field to multiple documents:
+- Notice how the adminType is added to all of the documents with a userType of 1
+> db.users.update({userType:1}, {$set:{adminLevel:1}}, {multi: true})
+WriteResult({ "nMatched" : 2, "nUpserted" : 0, "nModified" : 2 })
+> db.users.find()
+{ "_id" : ObjectId("58a86784b38580400f5cefae"), "userType" : 1, "firstName" : "Jack", "lastName" : "Johnson", "email" : "jack@email.com", "password" : "123", "socialMedia" : "twitter", "adminLevel" : 1 }
+{ "_id" : ObjectId("58a86784b38580400f5cefaf"), "userType" : 1, "firstName" : "Alicia", "lastName" : "Ramon", "email" : "alicia@email.com", "password" : "123", "socialMedia" : "facebook", "adminLevel" : 1 }
+{ "_id" : ObjectId("58a86784b38580400f5cefb0"), "userType" : 2, "firstName" : "Suki", "lastName" : "Tasaki", "email" : "suki@email.com", "password" : "123", "socialMedia" : "twitter" }
+{ "_id" : ObjectId("58a86784b38580400f5cefb1"), "userType" : 2, "firstName" : "Marco", "lastName" : "Valens", "email" : "marco@email.com", "password" : "123", "socialMedia" : "facebook" }
+{ "_id" : ObjectId("58a86784b38580400f5cefb2"), "userType" : 2, "firstName" : "Sue", "lastName" : "Parsons", "email" : "sue@email.com", "password" : "123", "socialMedia" : "gplus" }
+{ "_id" : ObjectId("58a86cb5d7e0ff40e1af5e89"), "userType" : 2, "firstName" : "George", "lastName" : "WhoCares", "email" : "wgaf@gmail.com", "password" : "password", "socialMedia" : "Facebook" }
+
+We can also remove data like so:
+- This removes all records with baz = 2
+Before:
+> db.nsrt.find()
+{ "_id" : 1, "bar" : 2 }
+After:
+> db.nsrt.remove({'bar':2})
+WriteResult({ "nRemoved" : 1 })
+> db.nsrt.find()
+> 
+
+To remove the whole collection:
+> db.nsrt.drop()
+true
+> show collections
+system.indexes
+
